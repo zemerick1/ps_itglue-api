@@ -121,4 +121,3 @@ function New-ACITGlueAPConfiguration {
 
     end {$Config}
 }
-New-ACITGlueAPConfiguration -OrgId 5561943
