@@ -1,0 +1,47 @@
+# /configuration/v2/groups?limit=20&offset=0
+```
+{
+  "data": [
+    [
+      "BES"
+    ],
+    [
+      "BOE"
+    ],
+    [
+      "CES"
+    ],
+    [
+      "CareerAcademy"
+    ],
+    [
+      "DES"
+    ],
+    [
+      "FES"
+    ],
+    [
+      "NES"
+    ],
+    [
+      "WCHS"
+    ],
+    [
+      "WCHS-Fieldhouse"
+    ],
+    [
+      "WCMS"
+    ],
+    [
+      "WPES"
+    ],
+    [
+      "default"
+    ],
+    [
+      "unprovisioned"
+    ]
+  ],
+  "total": 13
+}
+```
