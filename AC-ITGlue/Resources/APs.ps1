@@ -107,17 +107,17 @@ function New-ACITGlueAPConfiguration {
         [String]$OrgId
     )
     begin {
-        $endpoint = "/configuration/v2/groups?limit=20&offset=0"
+        $ACEndpoint = "/configuration/v2/groups?limit=20&offset=0"
         $ConfigEndpoint = "/configuration/v1/ap_cli/"
 
-        $Groups = Invoke-ArubaCLRestMethod -uri $endpoint
+        $Groups = Invoke-ArubaCLRestMethod -uri $ACEndpoint
     }
     process {
-        foreach ($Group in ($Groups.data | select -first 1)) {
+        foreach ($Group in $Groups.data) {
             if ($Group -eq "default" -or $Group -eq "unprovisioned") { continue }
             $Config = Invoke-ArubaCLRestMethod -uri ($ConfigEndpoint + $Group)
         }
     }
 
-    end {$Config}
+    end { $Config }
 }
