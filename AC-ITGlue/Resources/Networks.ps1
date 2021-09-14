@@ -134,4 +134,3 @@ function Set-ACITGlueNetwork {
     } 
     end { return $ReturnArray }
 }
-Set-ACITGlueNetwork -OrgId 5561943

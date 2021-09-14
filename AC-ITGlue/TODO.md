@@ -12,4 +12,5 @@
 []Figure out how to add multiple locations to an FlexAsset
 []See if you can utilize Topology AC API
 [] Possible way to export WPA passphrase - /configuration/v2/wlan/{group_name_or_guid}/{wlan_name}
+[] bring in licensing as a configuration
 ```

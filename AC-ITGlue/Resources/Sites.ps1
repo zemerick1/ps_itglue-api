@@ -71,4 +71,3 @@ function New-ACITGlueSites {
     }
     end { return $ReturnArray }
 }
-New-ACITglueSites -OrgId 5550979
