@@ -66,7 +66,7 @@ function New-ACITGlueSwitch {
                 }
             }
             # Check for existing configuration
-            $configuration = (Get-ITGlueConfigurations).data.attributes | Where-Object { $_.name -eq $switch.name }
+            $configuration = (Get-ITGlueConfigurations -organization_id $OrgId).data.attributes | Where-Object { $_.name -eq $switch.name }
             if (!$configuration) {    
                 New-ITGlueConfigurations -data $data | Out-Null
                 $Properties = @{

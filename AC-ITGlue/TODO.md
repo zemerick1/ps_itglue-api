@@ -13,5 +13,6 @@
 []See if you can utilize Topology AC API
 []Possible way to export WPA passphrase - broken: /configuration/v2/wlan/{group_name_or_guid}/{wlan_name} (NB API not enabled)
 []bring in licensing as a configuration - broken: /platform/licensing/v1/subscriptions (404)
-[]document commands
+[-]document commands
+[] Update New-ACITGlueNetwork to add physical location. (Call set-*)
 ```

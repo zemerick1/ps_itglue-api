@@ -66,7 +66,7 @@ function New-ACITGlueAP {
                     "model_id" = $model_id
                 }
             }
-            $configuration = (Get-ITGlueConfigurations).data.attributes | Where-Object { $_.name -eq $ap.name }
+            $configuration = (Get-ITGlueConfigurations -organization_id $OrgId).data.attributes | Where-Object { $_.name -eq $ap.name }
             if (!$configuration) {    
                 New-ITGlueConfigurations -data $data | Out-Null
                 $Properties = @{
