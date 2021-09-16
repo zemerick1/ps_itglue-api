@@ -7,10 +7,14 @@ This will connect to both ITGlue and Aruba Central
 ```
 New-ACITglueConnection
 ```
-
+## Get OrgId for organization
+```
+Get-ACITGlueOrgId
+```
 # Run the below command to sync everything that it can.
 ```
-New-ACITGlueSync
+New-ACITGlueSync -OrgId 111111
+New-ACITGlueSync -OrgId (GetACITGlueOrgId)
 ```
 
 # Syncs/Updates network (SSID) data with ITGlue.
