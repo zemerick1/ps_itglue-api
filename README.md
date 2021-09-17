@@ -32,3 +32,8 @@ New-ACITGlueSwitch
 ```
 New-ACITGlueSites
 ```
+
+# Syncs Aruba Central Subscriptions to Licensing FlexAsset within ITGlue
+```
+New-ACITGlueSubscription
+```
