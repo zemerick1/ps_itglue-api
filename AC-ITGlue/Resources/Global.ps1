@@ -21,12 +21,12 @@ function New-ACITGlueSync {
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }
     process {
-        New-ACITGlueSites
-        New-ACITGlueNetwork
-        New-ACITGlueSwitch
-        New-ACITGlueAP
-        Set-ACITGlueNetwork
+        New-ACITGlueSites -OrgId $OrgId
+        New-ACITGlueNetwork -OrgId $OrgId
+        New-ACITGlueSwitch -OrgId $OrgId
+        New-ACITGlueAP -OrgId $OrgId
+        Set-ACITGlueNetwork -OrgId $OrgId
+        New-ACITGlueSubscription -OrgId $OrgId
     }
     end {}
 }
-#New-ACITGlueSync -OrgId 5550979
