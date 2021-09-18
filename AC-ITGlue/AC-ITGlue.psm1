@@ -2,7 +2,7 @@
 Install-Module -Name ITGlueAPI -SkipPublisherCheck
 Import-Module -Name ITGlueAPI
 
-Install-Module -Name PowerArubaCL -SkipPublisherCheck
+Install-Module -Name PowerArubaCL -SkipPublisherCheck -Force
 Import-Module -Name PowerArubaCL
 # end
 
