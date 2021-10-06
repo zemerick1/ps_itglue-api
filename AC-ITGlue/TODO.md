@@ -17,4 +17,5 @@
 [][]Need Update function
 [-]document commands
 [] Update New-ACITGlueNetwork to add physical location. (Call set-*)
+[] fix New-ACITglueConnection (statuses are broken)
 ```

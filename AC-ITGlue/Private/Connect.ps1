@@ -17,9 +17,12 @@ function New-ACITglueConnection {
         }
 
         if (!$ACITGlueOrgId) {
-            Get-ACITGlueOrgId
+            $OrgId = Get-ACITGlueOrgId
         } else { $ACITGlueStatus = $true }
 
+        if ($OrgId -or $null -ne $OrgId) {
+            $ACITGlueStatus = $true
+        }
         $Properties = @{
             "ITGlueStatus" = $ITGlueStatus
             "ACStatus" = (Get-ArubaCLTokenStatus)
