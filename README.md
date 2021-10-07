@@ -14,7 +14,7 @@ Get-ACITGlueOrgId
 # Run the below command to sync everything that it can.
 ```
 New-ACITGlueSync -OrgId 111111
-New-ACITGlueSync -OrgId (GetACITGlueOrgId)
+New-ACITGlueSync -OrgId (Get-ACITGlueOrgId)
 ```
 
 # Syncs/Updates network (SSID) data with ITGlue.
