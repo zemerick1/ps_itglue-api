@@ -66,5 +66,6 @@ Get-ACITGlueOrgId
 ```
 
 # CREDITS
-@allgoutte /  https://github.com/PowerAruba/PowerArubaCL
+@alagoutte /  https://github.com/PowerAruba/PowerArubaCL
+
 @CalebAlbers / https://github.com/itglue/powershellwrapper
