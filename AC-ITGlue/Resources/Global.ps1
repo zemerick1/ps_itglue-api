@@ -21,7 +21,7 @@ function New-ACITGlueSync {
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }
     process {
-        New-ACITGlueSites -OrgId $OrgId
+        New-ACITGlueSite -OrgId $OrgId
         New-ACITGlueNetwork -OrgId $OrgId
         New-ACITGlueSwitch -OrgId $OrgId
         New-ACITGlueAP -OrgId $OrgId

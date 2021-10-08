@@ -20,3 +20,5 @@ Foreach ($import in @($Private + $Public)) {
         Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
+
+Write-Warning -Message "To get started please run New-ACITglueConnection"

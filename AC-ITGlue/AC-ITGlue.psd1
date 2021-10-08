@@ -24,7 +24,7 @@ GUID = '447d8cfb-4201-4cb5-a0ec-69b6b04aacde'
 Author = 'Zak Emerick'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = 'None'
 
 # Copyright statement for this module
 Copyright = '(c) Zak Emerick. All rights reserved.'
