@@ -1,8 +1,12 @@
 function Get-ACITGlueOrgId {
-    Param (
+    Param(
+        [Parameter(Mandatory = $true)]
+        [String]$OrgName,
+        [Parameter(Mandatory = $true)]
+        [String]$ITGAPIKey
     )
     begin {
-        $organization = Read-Host 'Please enter ITGlue Organization Name'
+        $organization = $OrgName
     }
     process {
         $org_id = (Get-ITGlueOrganizations -filter_name $organization).data.id

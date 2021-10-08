@@ -1,4 +1,4 @@
-function New-ACITGlueSites {
+function New-ACITGlueSite {
     <#
       .SYNOPSIS
       Sync Sites from Aruba Central to ITGlue locations
