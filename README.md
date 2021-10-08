@@ -64,3 +64,7 @@ New-ACITGlueSubscription -OrgId 111111
 ```
 Get-ACITGlueOrgId 
 ```
+
+# CREDITS
+@allgoutte /  https://github.com/PowerAruba/PowerArubaCL
+@CalebAlbers / https://github.com/itglue/powershellwrapper
