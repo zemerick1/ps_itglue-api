@@ -180,16 +180,15 @@ function Update-ACITGlueSwitch {
                 Set-ITGlueConfigurations -organization_id $OrgId -data $data -id $ConfigurationID | Out-Null
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $switch.name
+                    "Name" = $Switch.name
                     "Status" = $true
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
                 $ReturnArray += $ReturnData
             } else { 
-                Write-Warning -Message "Asset doesn't exist in IT Glue. ($($switch.name))"
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $switch.name
+                    "Name" = $Switch.name
                     "Status" = $false
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties

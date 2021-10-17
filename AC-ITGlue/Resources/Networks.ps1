@@ -74,20 +74,22 @@ function Update-ACITGlueNetwork {
       This will update an existing ITGlue asset with latest information from Aruba Central.
 
       .EXAMPLE
-      Set-ACITGlueNetwork -OrgId 1111111
+      Update-ACITGlueNetwork -OrgId 1111111
 
       .EXAMPLE
-      Set-ACITGlueNetwork
+      Update-ACITGlueNetwork
     #>
 
     Param(
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = "ITGlue Organization ID."
+            )]
         [String]$OrgId,
         [Parameter(Mandatory = $false)]
         [string]$IgnoreSite
     )
     begin {
-        if (!$OrgId) { $OrgId = $ACITGlueOrgId }
         $WirelessFlexId = 234110
         $ACEndpointNetwork = "/monitoring/v2/networks"
         $ACEndpointSite = "/central/v2/sites"
@@ -95,41 +97,55 @@ function Update-ACITGlueNetwork {
         $ReturnArray = @()
         # Hacky way to handle SSIDs at more than one location.
         $DenyList = @()
+        $SiteCount = $ACSites.Count
+        $i = 0
+        $j = 0
+        if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }
     process {
-        foreach ($site in $ACSites) {
-            $site_name = $site.site_name
-                $ACNetworks = Invoke-ArubaCLRestMethod -uri ($ACEndpointNetwork + "?site=" + $site_name)
-                foreach ($ACNetwork in $ACNetworks.networks) {
-                    $AssetId = (Get-ITGlueFlexibleAssets -filter_flexible_asset_type_id $WirelessFlexId `
-                        -filter_organization_id $OrgId -filter_name $ACNetwork.essid).data.id
-                    $data = @{
-                        "organization_id" = $OrgId
-                        "type" = "flexible-assets"
-                        attributes = @{
-                            "organization-id" = $OrgId
-                            "flexible-asset-type-id" = $WirelessFlexId
-                            traits = @{
-                                "network-name" = $ACNetwork.essid
-                                "ssid" = $ACNetwork.essid
-                                "security-type" = $ACNetwork.security
-                                #"pre-shared-key" = "10101010" # AC Will not return this.
-                                "hidden" = "False"
-                                "physical-location" = (Get-ITGlueLocations -org_id $OrgId -filter_name $site_name).data.id
-                            }   
-                        }
+        foreach ($Site in $ACSites) {
+            Write-Progress -Activity "Processing Site ($($Site.site_name))" -Status "$($i) of $($SiteCount)" -PercentComplete (($i / $SiteCount) * 100) -Id 1
+            $SiteName = $Site.site_name
+            $ACNetworks = Invoke-ArubaCLRestMethod -uri ($ACEndpointNetwork + "?site=" + $SiteName)
+            $NetworkCount = $ACNetworks.Count
+            foreach ($ACNetwork in $ACNetworks.networks) {
+                Write-Progress -Activity "Processing Network ($($ACNetwork.essid))" -Status "$($j) of $($NetworkCount)"  -PercentComplete (($j / $NetworkCount) * 100) -ParentId 1 -Id 2
+                $AssetId = (Get-ITGlueFlexibleAssets -filter_flexible_asset_type_id $WirelessFlexId `
+                    -filter_organization_id $OrgId -filter_name $ACNetwork.essid).data.id
+                $data = @{
+                    "organization_id" = $OrgId
+                    "type" = "flexible-assets"
+                    attributes = @{
+                        "organization-id" = $OrgId
+                        "flexible-asset-type-id" = $WirelessFlexId
+                        traits = @{
+                            "network-name" = $ACNetwork.essid
+                            "ssid" = $ACNetwork.essid
+                            "security-type" = $ACNetwork.security
+                            #"pre-shared-key" = "10101010" # AC Will not return this.
+                            "hidden" = "False"
+                            "physical-location" = (Get-ITGlueLocations -org_id $OrgId -filter_name $SiteName).data.id
+                        }   
                     }
-                    if ($DenyList.Contains($ACNetwork.essid)) { continue }
-                    $Properties = @{
-                        "OrgId" = $OrgId
-                        "Name" = $site_name
-                        "SSID" = $ACNetwork.essid
-                    }
-                    $ReturnData = New-Object -TypeName PSObject -Property $Properties
-                    $ReturnArray += $ReturnData
-                    Set-ITGlueFlexibleAssets -id $AssetId -data $data | Out-Null
-                    $DenyList += $ACNetwork.essid
                 }
+                if ($DenyList.Contains($ACNetwork.essid)) {
+                    # If network was already processed reset the counter.
+                    Write-Progress -Activity "Processing Network ($($ACNetwork.essid))" -Status "Network $($ACNetwork.essid) already processed. Skipping." -Id 2
+                    $j = 0
+                    continue 
+                }
+                $Properties = @{
+                    "OrgId" = $OrgId
+                    "Name" = $SiteName
+                    "SSID" = $ACNetwork.essid
+                }
+                $ReturnData = New-Object -TypeName PSObject -Property $Properties
+                $ReturnArray += $ReturnData
+                Set-ITGlueFlexibleAssets -id $AssetId -data $data | Out-Null
+                $DenyList += $ACNetwork.essid
+                $j++
+            }
+            $i++
         }
     } 
     end { return $ReturnArray }
