@@ -12,5 +12,5 @@
 [][]Add return object to New-*
 [][]Need Update function
 [-]document commands
-[] Update New-ACITGlueNetwork to add physical location. (Call set-*)
+[] Update New-ACITGlueNetwork to add physical location. (Call Update-*)
 ```

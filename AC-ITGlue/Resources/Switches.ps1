@@ -19,11 +19,11 @@ function New-ACITGlueSwitch {
     )
     begin {
         $endpoint = "/monitoring/v1/switches"
-        $switches = Invoke-ArubaCLRestMethod -uri $endpoint
+        $Switches = Invoke-ArubaCLRestMethod -uri $endpoint
         $ManufacturerId = 1657387
         $SwitchConfigId = 501527
         $ReturnArray = @()
-        $SwitchCount = $switches.Count
+        $SwitchCount = $Switches.Count
         $i = 0
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }
@@ -119,8 +119,8 @@ function Update-ACITGlueSwitch {
             Write-Error -Message "ERROR: ITGlue or Aruba Central are not connected."
             New-ACITglueConnection 
         }
-        $endpoint = "/monitoring/v1/switches"
-        $switches = Invoke-ArubaCLRestMethod -uri $endpoint
+        $ACEndpoint = "/monitoring/v1/switches"
+        $Switches = Invoke-ArubaCLRestMethod -uri $ACEndpoint
         $ManufacturerId = 1657387
         $SwitchConfigId = 501527
         $ReturnArray = @()
@@ -133,35 +133,35 @@ function Update-ACITGlueSwitch {
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }
     process {
-        foreach ($switch in $switches.switches) {
-            Write-Progress -Activity "Processing switch ($($switch.name))" -Status "$($i) of $($SwitchCount)" -PercentComplete (($i / $SwitchCount) * 100)
+        foreach ($Switch in $switches.switches) {
+            Write-Progress -Activity "Processing switch ($($Switch.name))" -Status "$($i) of $($SwitchCount)" -PercentComplete (($i / $SwitchCount) * 100)
             # Find Model in IT Glue
-            $model = (Get-ITGlueModels).data.attributes | Where-Object { $_.name -eq $switch.model}
+            $model = (Get-ITGlueModels).data.attributes | Where-Object { $_.name -eq $Switch.model}
             
             # If model doesn't exist create it.
             if (!$model) {
                 $data = @{
                     type = "models"
                     attributes = @{
-                        name = $switch.model
+                        name = $Switch.model
                         "manufacturer-id" = $ManufacturerId
                     }
                 } 
                 New-ITGlueModels -data $data | Out-Null
             }
-            $model_id = ((Get-ITGlueModels).data | Where-Object { $_.attributes.name -eq $switch.model}).id
-            $ITGlueLocationId = (Get-ITGlueLocations -org_id $OrgId -filter_name $switch.site).data.id
+            $model_id = ((Get-ITGlueModels).data | Where-Object { $_.attributes.name -eq $Switch.model}).id
+            $ITGlueLocationId = (Get-ITGlueLocations -org_id $OrgId -filter_name $Switch.site).data.id
             $data = @{
                 "organization_id" = $OrgId
                 "type" = "configurations"
                 attributes = @{
                     "organization_id" = $OrgId
                     "location_id" = $ITGlueLocationId
-                    "name" = $switch.name
-                    "mac_address" = $switch.macaddr
-                    "serial_number" = $switch.serial
-                    "primary_ip" = $switch.ip_address
-                    "hostname" = $switch.name
+                    "name" = $Switch.name
+                    "mac_address" = $Switch.macaddr
+                    "serial_number" = $Switch.serial
+                    "primary_ip" = $Switch.ip_address
+                    "hostname" = $Switch.name
                     "configuration-type-id" = $SwitchConfigId
                     "configuration-type-name" = "Switch"
                     "configuration-type-kind" = "switch"
@@ -172,25 +172,23 @@ function Update-ACITGlueSwitch {
                 }
             }
             # Check for existing configuration
-            $ConfigurationData = (Get-ITGlueConfigurations -organization_id $OrgId -page_size 250).data | Where-Object { $_.attributes."configuration-type-name" -eq "Switch" }
-            
-            # ConfigurationData returns a lot of results. . do I need another foreach? FFS I hope not.
+            $ConfigurationData = (Get-ITGlueConfigurations -organization_id $OrgId -page_size 250).data | Where-Object `
+            { $_.attributes."configuration-type-name" -eq "Switch" -and $_.attributes."serial-number" -eq $Switch.serial }
 
             if ($ConfigurationData) {
                 [int]$ConfigurationID = $ConfigurationData.id
                 Set-ITGlueConfigurations -organization_id $OrgId -data $data -id $ConfigurationID | Out-Null
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $switch.name
+                    "Name" = $Switch.name
                     "Status" = $true
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
                 $ReturnArray += $ReturnData
             } else { 
-                Write-Warning -Message "Asset doesn't exist in IT Glue. ($($switch.name))"
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $switch.name
+                    "Name" = $Switch.name
                     "Status" = $false
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
