@@ -19,11 +19,11 @@ function New-ACITGlueSwitch {
     )
     begin {
         $endpoint = "/monitoring/v1/switches"
-        $switches = Invoke-ArubaCLRestMethod -uri $endpoint
+        $Switches = Invoke-ArubaCLRestMethod -uri $endpoint
         $ManufacturerId = 1657387
         $SwitchConfigId = 501527
         $ReturnArray = @()
-        $SwitchCount = $switches.Count
+        $SwitchCount = $Switches.Count
         $i = 0
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
     }

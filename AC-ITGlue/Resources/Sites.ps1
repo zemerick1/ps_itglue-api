@@ -75,4 +75,3 @@ function New-ACITGlueSite {
     }
     end { return $ReturnArray }
 }
-New-ACITGlueSite -OrgId 5565561

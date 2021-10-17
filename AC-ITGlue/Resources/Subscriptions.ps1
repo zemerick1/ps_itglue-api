@@ -11,11 +11,23 @@ function New-ACITGlueSubscription {
 
       .EXAMPLE
       New-ACITGlueSites
+
+      .EXAMPLE
+      This will included expired licenses from Aruba Central.
+      New-ACITGlue Sites -OrgID 1111111 -IncludeExpired
     #>
 
   Param(
-    [Parameter(Mandatory = $false)]
-    [String]$OrgId
+    [Parameter(
+        Mandatory = $false,
+        HelpMessage = "ITGlue Organization ID."
+        )]
+    [String]$OrgId,
+    [Parameter(
+        Mandatory = $false,
+        HelpMessage = "Will include expired licenses."
+    )]
+    [switch]$IncludeExpired = $false
     )
     begin {
         $ACEndpoint = "/platform/licensing/v1/subscriptions?license_type=all"
@@ -25,16 +37,18 @@ function New-ACITGlueSubscription {
         $ReturnArray = @()
         [datetime]$OriginStart = '1970-01-01 00:00:00'
         [datetime]$OriginEnd = '1970-01-01 00:00:00'
+        $SubCount = $Subscriptions.subscriptions.Count
+        $i = 0
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
-        $SubCount= $Subscriptions.Count
-        $i++
     }
     process {
         foreach ($Sub in $Subscriptions.subscriptions) {
             Write-Progress -Activity "Processing Subscription ($($Sub.subscription_key))" -Status "$($i) of $($SubCount)" -PercentComplete (($i / $SubCount) * 100)
-            if ($Sub.status -ne "OK") { 
-                $i++
-                continue 
+            if (!$IncludeExpired) {
+                if ($Sub.status -ne "OK") { 
+                    $i++
+                    continue 
+                }
             }
             $StartTime = $Sub.start_date
             $RenewalTime = $Sub.end_date
