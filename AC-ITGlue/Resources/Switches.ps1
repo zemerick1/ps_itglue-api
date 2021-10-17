@@ -174,8 +174,6 @@ function Update-ACITGlueSwitch {
             # Check for existing configuration
             $ConfigurationData = (Get-ITGlueConfigurations -organization_id $OrgId -page_size 250).data | Where-Object `
             { $_.attributes."configuration-type-name" -eq "Switch" -and $_.attributes."serial-number" -eq $Switch.serial }
-            
-            # ConfigurationData returns a lot of results. . do I need another foreach? FFS I hope not.
 
             if ($ConfigurationData) {
                 [int]$ConfigurationID = $ConfigurationData.id
