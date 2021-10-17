@@ -15,7 +15,12 @@ function New-ACITGlueAP {
 
     Param(
         [Parameter(Mandatory = $false)]
-        [String]$OrgId
+        [String]$OrgId,
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = "Include all APs, not just the conductors. CAUTION: This will include ALL APs at every site for the Aruba Central instance."
+            )]
+        [switch]$IncludeAll = $false
     )
     begin {
         $endpoint = "/monitoring/v2/aps"
@@ -23,9 +28,10 @@ function New-ACITGlueAP {
         $ManufacturerId = 1657387
         $WifiConfigId = 501532
         $ReturnArray = @()
-        if (!$OrgId) { $OrgId = $ACITGlueOrgId }
         $APCount = $APs.Count
         $i = 0
+        if (!$OrgId) { $OrgId = $ACITGlueOrgId }
+        if ($IncludeAll) { Write-Warning -Message "IncludeAll switch used. This could take some time." }
     }
     process {
         foreach ($ap in $APs.aps) {
@@ -44,9 +50,11 @@ function New-ACITGlueAP {
                 } 
                 New-ITGlueModels -data $data | Out-Null
             }
-            if ($AP.swarm_master -eq $false) { 
-                $i++
-                continue 
+            if (!$IncludeAll) {
+                if ($AP.swarm_master -eq $false) { 
+                    $i++
+                    continue 
+                }
             }
 
             $ITGlueLocationId = (Get-ITGlueLocations -org_id $OrgId -filter_name $AP.site).data.id
