@@ -23,6 +23,8 @@ function New-ACITGlueSite {
         $ReturnArray = @()
         $ReturnData = [PSCustomObject]@{}
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
+        $SiteCount= $ACSites.count
+        $i = 0
     }
     process {
         # Check for valid Organization
@@ -30,30 +32,31 @@ function New-ACITGlueSite {
             Write-Error "Invalid organization."
             break
         }
-        foreach ($site in $ACSites) {
-            $ITGlue_Location = (Get-ITGlueLocations -org_id $OrgId).data.attributes | Where-Object { $_.name -eq $site.site_name }
+        foreach ($Site in $ACSites) {
+            Write-Progress -Activity "Processing Site ($($Site.site_name))" -Status "$($i) of $($SiteCount)" -PercentComplete (($i / $SiteCount) * 100)
+            $ITGlue_Location = (Get-ITGlueLocations -org_id $OrgId).data.attributes | Where-Object { $_.name -eq $Site.site_name }
             if (!$ITGlue_Location) {
                 $data = @{
                     "organization_id" = $OrgId
                     "type" = "locations"
                     attributes = @{
                         "organization_id" = $OrgId
-                        "name" = $site.site_name
-                        "address_1" = $site.address
+                        "name" = $Site.site_name
+                        "address_1" = $Site.address
                         "adress_2" = $null
-                        "city" = $site.city
-                        "region_name" = $site.state
+                        "city" = $Site.city
+                        "region_name" = $Site.state
                         "region_id" = 63
-                        "postal_code" = $site.zipcode
-                        "country_id" = 2
-                        "latitude" = $site.latitude
-                        "longitude" = $site.longitude
+                        "postal_code" = $Site.zipcode
+                        "country_id" = 2 # Assumes US
+                        "latitude" = $Site.latitude
+                        "longitude" = $Site.longitude
                     }
                 }
                 New-ITGlueLocations -org_id $OrgId -data $data | Out-Null
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $site.site_name
+                    "Name" = $Site.site_name
                     "Status" = $true
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
@@ -61,13 +64,15 @@ function New-ACITGlueSite {
             } else { 
                 $Properties = @{
                     "OrgId" = $OrgId
-                    "Name" = $site.site_name
+                    "Name" = $Site.site_name
                     "Status" = $false
                 }
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
                 $ReturnArray += $ReturnData
             }
+            $i++
         }
     }
     end { return $ReturnArray }
 }
+New-ACITGlueSite -OrgId 5565561

@@ -30,5 +30,8 @@ function New-ACITglueConnection {
         }
         $ReturnData = New-Object -TypeName PSObject -Property $Properties
     }
-    end { return $ReturnData }
+    end { 
+        Set-Variable -Name ACITGlueStatus -Value $ReturnData -Scope global
+        return $ReturnData 
+    }
 }
