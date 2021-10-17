@@ -26,10 +26,16 @@ function New-ACITGlueSubscription {
         [datetime]$OriginStart = '1970-01-01 00:00:00'
         [datetime]$OriginEnd = '1970-01-01 00:00:00'
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
+        $SubCount= $Subscriptions.Count
+        $i++
     }
     process {
         foreach ($Sub in $Subscriptions.subscriptions) {
-            if ($Sub.status -ne "OK") { continue }
+            Write-Progress -Activity "Processing Subscription ($($Sub.subscription_key))" -Status "$($i) of $($SubCount)" -PercentComplete (($i / $SubCount) * 100)
+            if ($Sub.status -ne "OK") { 
+                $i++
+                continue 
+            }
             $StartTime = $Sub.start_date
             $RenewalTime = $Sub.end_date
             $LicenseKey = "<div>" + $Sub.subscription_key + " : " + $Sub.sku + "<br></div>"
@@ -56,6 +62,7 @@ function New-ACITGlueSubscription {
             if (!$Asset) {
                 New-ITGlueFlexibleAssets -organization_id $OrgId -data $data | Out-Null
             }
+            $i++
         }
     }
     end { return $ReturnArray }

@@ -25,7 +25,7 @@ function New-ACITGlueSync {
         New-ACITGlueNetwork -OrgId $OrgId
         New-ACITGlueSwitch -OrgId $OrgId
         New-ACITGlueAP -OrgId $OrgId
-        Set-ACITGlueNetwork -OrgId $OrgId
+        Update-ACITGlueNetwork -OrgId $OrgId
         New-ACITGlueSubscription -OrgId $OrgId
     }
     end {}

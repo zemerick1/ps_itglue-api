@@ -30,7 +30,7 @@ New-ACITGlueSite -OrgId 111111
 New-ACITGlueNetwork -OrgId 111111
 New-ACITGlueSwitch -OrgId 111111
 New-ACITGlueAP -OrgId 111111
-Set-ACITGlueNetwork -OrgId 111111
+Update-ACITGlueNetwork -OrgId 111111
 New-ACITGlueSubscription -OrgId 111111
 ```
 
@@ -47,7 +47,7 @@ New-ACITGlueNetwork -OrgId 111111
 # Updates network (SSID) data with ITGlue.
 (Does not add any new networks)
 ```
-Set-ACITGlueNetwork -OrgId 111111
+Update-ACITGlueNetwork -OrgId 111111
 ```
 
 # Syncs Aruba Central Sites to locations within ITGlue.

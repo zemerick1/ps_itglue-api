@@ -65,7 +65,7 @@ function New-ACITGlueNetwork {
     }
     end { return $ReturnArray }
 }
-function Set-ACITGlueNetwork {
+function Update-ACITGlueNetwork {
     <#
       .SYNOPSIS
       Sync Networks from Aruba Central to ITGlue flexable assets

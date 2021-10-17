@@ -19,14 +19,17 @@ function New-ACITGlueAP {
     )
     begin {
         $endpoint = "/monitoring/v2/aps"
-        $Aps = Invoke-ArubaCLRestMethod -uri $endpoint -limit 1000
+        $APs = Invoke-ArubaCLRestMethod -uri $endpoint -limit 1000
         $ManufacturerId = 1657387
         $WifiConfigId = 501532
         $ReturnArray = @()
         if (!$OrgId) { $OrgId = $ACITGlueOrgId }
+        $APCount = $APs.Count
+        $i = 0
     }
     process {
-        foreach ($ap in $aps.aps) {
+        foreach ($ap in $APs.aps) {
+            Write-Progress -Activity "Processing AP ($($AP.name))" -Status "$($i) of $($APCount)" -PercentComplete (($i / $APCount) * 100)
             # Create models even if the AP is not the conductor.
             $model = (Get-ITGlueModels).data.attributes | Where-Object { $_.name -eq $ap.model}
           
@@ -35,28 +38,31 @@ function New-ACITGlueAP {
                 $data = @{
                     type = "models"
                     attributes = @{
-                        name = $ap.model
+                        name = $AP.model
                         "manufacturer-id" = $ManufacturerId
                     }
                 } 
                 New-ITGlueModels -data $data | Out-Null
             }
-            if ($ap.swarm_master -eq $false) { continue }
+            if ($AP.swarm_master -eq $false) { 
+                $i++
+                continue 
+            }
 
-            $ITGlueLocationId = (Get-ITGlueLocations -org_id $OrgId -filter_name $ap.site).data.id
-            $model_id = ((Get-ITGlueModels).data | Where-Object { $_.attributes.name -eq $ap.model}).id
+            $ITGlueLocationId = (Get-ITGlueLocations -org_id $OrgId -filter_name $AP.site).data.id
+            $model_id = ((Get-ITGlueModels).data | Where-Object { $_.attributes.name -eq $AP.model}).id
             $data = @{
                 "organization_id" = $OrgId
                 "type" = "configurations"
                 attributes = @{
                     "organization_id" = $OrgId
                     "location_id" = $ITGlueLocationId
-                    "name" = $ap.name
-                    "mac_address" = $ap.macaddr
-                    "serial_number" = $ap.serial
-                    "primary_ip" = $ap.ip_address
-                    "hostname" = $ap.name
-                    "operating_system_notes" = $ap.firmware_version
+                    "name" = $AP.name
+                    "mac_address" = $AP.macaddr
+                    "serial_number" = $AP.serial
+                    "primary_ip" = $AP.ip_address
+                    "hostname" = $AP.name
+                    "operating_system_notes" = $AP.firmware_version
                     "configuration-type-id" = $WifiConfigId
                     "configuration-type-name" = "Wifi"
                     "configuration-type-kind" = "Wifi"
@@ -66,7 +72,7 @@ function New-ACITGlueAP {
                     "model_id" = $model_id
                 }
             }
-            $configuration = (Get-ITGlueConfigurations -organization_id $OrgId).data.attributes | Where-Object { $_.name -eq $ap.name }
+            $configuration = (Get-ITGlueConfigurations -organization_id $OrgId).data.attributes | Where-Object { $_."serial-number" -eq $ap.serial }
             if (!$configuration) {    
                 New-ITGlueConfigurations -data $data | Out-Null
                 $Properties = @{
@@ -85,6 +91,7 @@ function New-ACITGlueAP {
                 $ReturnData = New-Object -TypeName PSObject -Property $Properties
                 $ReturnArray += $ReturnData
             }
+            $i++
         }
     }
     end { return $ReturnArray }
